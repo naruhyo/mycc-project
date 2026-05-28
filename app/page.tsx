@@ -1,5 +1,10 @@
-import { ComponentExample } from "@/components/component-example";
+import { Suspense } from "react";
+import { MbtiGame } from "@/components/mbti/MbtiGame";
 
 export default function Page() {
-return <ComponentExample />;
+  return (
+    <Suspense fallback={null}>
+      <MbtiGame />
+    </Suspense>
+  );
 }
