@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wireframe: MBTI 캐릭터 매치</title>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  :root {
+    --w-bg: #eafaf2;
+    --w-border: #7fc9a8;
+    --w-text: #154734;
+    --w-muted: #4d8a72;
+    --w-fill: #cdedde;
+    /* 캐릭터 카드 액센트 (옵션 1: 이모지 + 컬러 카드) */
+    --w-c1-bg: #ffe8d6;
+    --w-c1-edge: #ffb88c;
+    --w-c2-bg: #e4d9ff;
+    --w-c2-edge: #b8a4e8;
+    --w-c3-bg: #fff4b8;
+    --w-c3-edge: #f0d670;
+  }
+
+  * {
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    color: var(--w-text);
+  }
+
+  body { background: var(--w-bg); }
+
+  /* Screen nav */
+  nav { position: sticky; top: 0; z-index: 40; background: var(--w-bg); border-bottom: 1px solid var(--w-border); }
+  nav button { cursor: pointer; font-size: 13px; }
+  nav button:hover { background: var(--w-fill); border-radius: 4px; }
+  nav button.active { font-weight: bold; border-bottom: 2px solid var(--w-text); }
+
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* Viewport toggle */
+  .vp-toggle button {
+    font-size: 12px; padding: 2px 8px;
+    border: 1px solid var(--w-border); cursor: pointer; background: white;
+  }
+  .vp-toggle button:first-child { border-radius: 4px 0 0 4px; }
+  .vp-toggle button:last-child { border-radius: 0 4px 4px 0; border-left: none; }
+  .vp-toggle button.active { background: var(--w-text); color: white; }
+
+  /* Scenario toggle */
+  .sc-toggle {
+    display: flex; gap: 4px; margin-bottom: 16px;
+    padding: 8px; background: var(--w-fill); border-radius: 8px;
+  }
+  .sc-toggle button {
+    font-size: 11px; padding: 4px 10px;
+    border: 1px solid var(--w-border); cursor: pointer; background: white; border-radius: 4px;
+  }
+  .sc-toggle button.active { background: var(--w-text); color: white; }
+
+  /* Mobile viewport frame */
+  body.viewport-mobile .screen-content {
+    max-width: 375px !important;
+    margin: 24px auto !important;
+    border: 2px solid var(--w-border);
+    border-radius: 24px;
+    min-height: 667px;
+    background: white;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    padding: 32px 16px !important;
+  }
+
+  /* Screen Notes */
+  .screen-notes {
+    background: #fffde7;
+    border-left: 3px solid #ffd54f;
+    padding: 12px 16px;
+    margin-top: 24px;
+    font-size: 13px;
+    border-radius: 0 4px 4px 0;
+  }
+  .screen-notes summary {
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 12px;
+    color: #b0a050;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .screen-notes p { margin: 6px 0 2px; color: #777; }
+  .screen-notes ul { margin: 4px 0 0 16px; padding: 0; color: #777; }
+  .screen-notes li { margin: 2px 0; }
+
+  /* Wireframe playful primitives */
+  .w-card {
+    border: 1.5px solid var(--w-border);
+    border-radius: 16px;
+    padding: 16px;
+    background: white;
+  }
+
+  /* 캐릭터 카드 변형 */
+  .w-char-card {
+    border-radius: 20px;
+    padding: 20px 16px;
+    border-width: 1.5px;
+    border-style: solid;
+  }
+  .w-char-1 { background: var(--w-c1-bg); border-color: var(--w-c1-edge); }
+  .w-char-2 { background: var(--w-c2-bg); border-color: var(--w-c2-edge); }
+  .w-char-3 { background: var(--w-c3-bg); border-color: var(--w-c3-edge); }
+  .w-char-emoji {
+    font-size: 36px;
+    line-height: 1;
+    letter-spacing: 4px;
+    text-align: center;
+    margin-bottom: 12px;
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,0.05));
+  }
+  .w-btn {
+    border: 1.5px solid var(--w-border);
+    border-radius: 999px;
+    padding: 14px 20px;
+    background: white;
+    cursor: pointer;
+    font-size: 14px;
+    text-align: center;
+    width: 100%;
+    transition: all .15s;
+  }
+  .w-btn:hover { background: var(--w-fill); }
+  .w-btn-primary {
+    background: var(--w-text);
+    color: white;
+    border-color: var(--w-text);
+  }
+  .w-btn-primary:hover { opacity: .85; background: var(--w-text); }
+  .w-chip {
+    display: inline-block;
+    border: 1px dashed var(--w-border);
+    border-radius: 999px;
+    padding: 4px 12px;
+    font-size: 12px;
+  }
+  .w-progress-track {
+    width: 100%;
+    height: 8px;
+    background: var(--w-fill);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .w-progress-bar {
+    height: 100%;
+    background: var(--w-text);
+    border-radius: 999px;
+    transition: width .2s;
+  }
+
+  /* Toast */
+  .w-toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--w-text);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 999px;
+    font-size: 13px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 100;
+  }
+</style>
+</head>
+<body class="p-0 m-0 viewport-mobile">
+
+<nav class="flex items-center gap-4 px-6 py-2">
+  <span class="text-xs" style="color:var(--w-muted)">wireframe</span>
+  <button id="nav-0" onclick="show(0)" class="px-2 py-1">시작</button>
+  <button id="nav-1" onclick="show(1)" class="px-2 py-1">질문</button>
+  <button id="nav-2" onclick="show(2)" class="px-2 py-1">결과</button>
+  <div class="vp-toggle flex ml-auto">
+    <button id="vp-desktop" onclick="setViewport('desktop')">Desktop</button>
+    <button id="vp-mobile" onclick="setViewport('mobile')" class="active">Mobile</button>
+  </div>
+</nav>
+
+<!-- ========== Screen 0: 시작 화면 ========== -->
+<div id="screen-0" class="screen" data-scenario="scenario-1, scenario-4, scenario-5, scenario-6">
+  <div class="screen-content @container max-w-6xl mx-auto p-6">
+
+    <h2 class="text-lg font-bold mb-5" style="color:var(--w-muted); border-bottom:1px solid var(--w-border); padding-bottom:8px;">
+      시작 화면
+    </h2>
+
+    <div class="flex flex-col items-center text-center pt-12 pb-8 gap-6">
+
+      <div class="flex gap-2">
+        <i data-lucide="sparkles" class="w-5 h-5"></i>
+        <i data-lucide="heart" class="w-5 h-5"></i>
+        <i data-lucide="sparkles" class="w-5 h-5"></i>
+      </div>
+
+      <div class="space-y-3">
+        <h1 class="text-3xl font-bold" style="color:var(--w-text);">MBTI 캐릭터 매치</h1>
+        <p class="text-sm" style="color:var(--w-muted);">
+          12개 질문에 답하면<br>
+          나와 닮은 캐릭터 3명을 찾아드려요
+        </p>
+      </div>
+
+      <div class="flex gap-2 flex-wrap justify-center pt-2">
+        <span class="w-chip">⏱ 약 2분</span>
+        <span class="w-chip">📱 모바일 최적화</span>
+        <span class="w-chip">🎭 16유형</span>
+      </div>
+
+      <div class="w-full max-w-xs pt-6">
+        <button class="w-btn w-btn-primary">
+          시작하기 →
+        </button>
+      </div>
+
+      <p class="text-xs" style="color:var(--w-muted);">
+        결과는 링크로 친구에게 공유할 수 있어요
+      </p>
+
+    </div>
+
+    <div class="screen-notes">
+      <details open>
+        <summary>Notes</summary>
+        <p>가장 처음 진입하는 랜딩 화면. 잘못된 URL fallback도 여기로 모인다.</p>
+        <ul>
+          <li>트리거: <code>?type</code> 없음 / 잘못된 <code>?type=XYZ</code> / "다시하기"·"나도 해보기" 클릭 / 새로고침</li>
+          <li>인터랙션: "시작하기" 버튼 클릭 → 질문 화면 1번 문항으로 전환</li>
+          <li>전환: 시작하기 → 질문 화면 (진행 1/12)</li>
+        </ul>
+      </details>
+    </div>
+
+  </div>
+</div>
+
+<!-- ========== Screen 1: 질문 화면 ========== -->
+<div id="screen-1" class="screen" data-scenario="scenario-1, scenario-5">
+  <div class="screen-content @container max-w-6xl mx-auto p-6">
+
+    <h2 class="text-lg font-bold mb-5" style="color:var(--w-muted); border-bottom:1px solid var(--w-border); padding-bottom:8px;">
+      질문 화면
+    </h2>
+
+    <!-- Scenario toggle -->
+    <div class="sc-toggle">
+      <button onclick="setQuestion(1)" class="active" id="q-btn-1">1 / 12 (첫 문항)</button>
+      <button onclick="setQuestion(5)" id="q-btn-5">5 / 12 (시나리오 5)</button>
+      <button onclick="setQuestion(12)" id="q-btn-12">12 / 12 (마지막)</button>
+    </div>
+
+    <div class="flex flex-col gap-6 pt-2">
+
+      <!-- 진행 표시 -->
+      <div class="space-y-2">
+        <div class="flex justify-between items-center">
+          <span class="text-xs" style="color:var(--w-muted);">진행 상태</span>
+          <span class="text-sm font-bold"><span id="q-num">1</span> / 12</span>
+        </div>
+        <div class="w-progress-track">
+          <div class="w-progress-bar" id="q-bar" style="width: 8.33%;"></div>
+        </div>
+      </div>
+
+      <!-- 질문 카드 -->
+      <div class="w-card" style="padding: 24px;">
+        <div class="flex items-start gap-3 mb-4">
+          <span class="w-chip" style="border-style:solid;">Q<span id="q-num-inline">1</span></span>
+          <p class="text-base font-bold leading-relaxed" style="color:var(--w-text);" id="q-text">
+            친구들과 주말 약속을 잡았어요.<br>
+            당신은 어떤 쪽에 가까운가요?
+          </p>
+        </div>
+      </div>
+
+      <!-- 선택지 (2~4개, 여기선 4개 예시) -->
+      <div class="flex flex-col gap-3">
+        <button class="w-btn text-left" style="text-align:left; padding-left:20px;">
+          <span class="font-bold mr-2">A.</span> 새로운 사람들도 함께 부르고 싶다
+        </button>
+        <button class="w-btn text-left" style="text-align:left; padding-left:20px;">
+          <span class="font-bold mr-2">B.</span> 친한 친구 한두 명과 조용히 보내고 싶다
+        </button>
+        <button class="w-btn text-left" style="text-align:left; padding-left:20px;">
+          <span class="font-bold mr-2">C.</span> 큰 모임에 가서 에너지를 얻고 싶다
+        </button>
+        <button class="w-btn text-left" style="text-align:left; padding-left:20px;">
+          <span class="font-bold mr-2">D.</span> 혼자만의 시간이 더 좋다
+        </button>
+      </div>
+
+      <p class="text-xs text-center" style="color:var(--w-muted);">
+        뒤로가기·중간저장 없음. 새로고침 시 처음부터.
+      </p>
+
+    </div>
+
+    <div class="screen-notes">
+      <details open>
+        <summary>Notes</summary>
+        <p>12개 문항을 순차적으로 보여준다. 선택지를 누르면 즉시 다음 문항으로 넘어가고 진행 표시가 갱신된다.</p>
+        <ul>
+          <li>트리거: 시작 화면 "시작하기" 클릭 직후</li>
+          <li>인터랙션: 선택지 A/B/C/D 중 하나 클릭 → 즉시 다음 질문으로 전환 (체감 100ms 이내)</li>
+          <li>전환: 12번째 선택지 클릭 → 결과 화면 / 새로고침 → 시작 화면 (진행 손실)</li>
+          <li>시나리오 5: 5/12 상태에서 새로고침하면 시작 화면으로 돌아간다 (사용자 검증 포인트)</li>
+        </ul>
+      </details>
+    </div>
+
+  </div>
+</div>
+
+<!-- ========== Screen 2: 결과 화면 ========== -->
+<div id="screen-2" class="screen" data-scenario="scenario-1, scenario-2, scenario-3, scenario-4, scenario-7">
+  <div class="screen-content @container max-w-6xl mx-auto p-6">
+
+    <h2 class="text-lg font-bold mb-5" style="color:var(--w-muted); border-bottom:1px solid var(--w-border); padding-bottom:8px;">
+      결과 화면
+    </h2>
+
+    <!-- Scenario toggle -->
+    <div class="sc-toggle">
+      <button onclick="setResultMode('self')" class="active" id="r-btn-self">자가 완료 (1, 4, 7)</button>
+      <button onclick="setResultMode('copied')" id="r-btn-copied">복사 직후 (2)</button>
+      <button onclick="setResultMode('shared')" id="r-btn-shared">공유 링크 진입 (3)</button>
+    </div>
+
+    <div class="flex flex-col gap-5 pt-2">
+
+      <!-- 유형 hero -->
+      <div class="w-card text-center" style="padding: 28px 16px;">
+        <p class="text-xs mb-2" style="color:var(--w-muted);">당신의 유형은</p>
+        <h1 class="text-5xl font-bold tracking-wider mb-2" style="color:var(--w-text);">ENFP</h1>
+        <p class="text-base font-bold mb-3">재기발랄한 활동가</p>
+        <p class="text-sm leading-relaxed" style="color:var(--w-muted);">
+          호기심이 많고 사람들과 어울리는 걸 좋아하는 자유로운 영혼.
+          새로운 가능성을 발견하고 주변에 에너지를 전하는 타입이에요.
+        </p>
+      </div>
+
+      <!-- 캐릭터 카드 섹션 -->
+      <div>
+        <div class="flex items-center gap-2 mb-3">
+          <i data-lucide="sparkles" class="w-4 h-4"></i>
+          <h3 class="text-sm font-bold">당신과 닮은 캐릭터</h3>
+        </div>
+
+        <div class="flex flex-col @md:flex-row gap-3">
+
+          <div class="w-char-card w-char-1 flex-1">
+            <div class="w-char-emoji">🏴‍☠️ 🌊 🍖</div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="w-chip" style="border-style:solid; background:white;">#1</span>
+              <p class="font-bold text-base">루피</p>
+            </div>
+            <p class="text-xs mb-2" style="color:var(--w-muted);">원피스</p>
+            <p class="text-xs leading-relaxed">
+              "동료를 모으는 천진난만한 모험가" — 늘 새 길로 뛰어드는 ENFP의 정수.
+            </p>
+          </div>
+
+          <div class="w-char-card w-char-2 flex-1">
+            <div class="w-char-emoji">❄️ 💛 🎶</div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="w-chip" style="border-style:solid; background:white;">#2</span>
+              <p class="font-bold text-base">아나</p>
+            </div>
+            <p class="text-xs mb-2" style="color:var(--w-muted);">겨울왕국</p>
+            <p class="text-xs leading-relaxed">
+              "마음 가는 대로 사랑을 표현하는 자유로움" — ENFP다운 즉흥성과 따뜻함.
+            </p>
+          </div>
+
+          <div class="w-char-card w-char-3 flex-1">
+            <div class="w-char-emoji">🚀 🌌 🎷</div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="w-chip" style="border-style:solid; background:white;">#3</span>
+              <p class="font-bold text-base">스파이크</p>
+            </div>
+            <p class="text-xs mb-2" style="color:var(--w-muted);">카우보이 비밥</p>
+            <p class="text-xs leading-relaxed">
+              "어디에도 매이지 않는 자유인" — 충동과 직관으로 사는 ENFP의 그림자.
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 액션 버튼 -->
+      <div class="flex flex-col gap-3 pt-2" id="result-actions">
+        <!-- self 모드 기본 -->
+        <button class="w-btn w-btn-primary" id="action-primary">
+          <i data-lucide="link-2" class="inline w-4 h-4 mr-1" style="vertical-align:-2px;"></i>
+          링크 복사
+        </button>
+        <button class="w-btn" id="action-secondary">
+          <i data-lucide="refresh-cw" class="inline w-4 h-4 mr-1" style="vertical-align:-2px;"></i>
+          다시하기
+        </button>
+      </div>
+
+      <p class="text-xs text-center pt-1" style="color:var(--w-muted);">
+        ?type=ENFP 링크를 공유하면 친구도 바로 결과를 볼 수 있어요
+      </p>
+
+    </div>
+
+    <!-- 복사 토스트 (시나리오 2) -->
+    <div class="w-toast" id="copy-toast" style="display:none;">
+      <i data-lucide="check" class="inline w-4 h-4 mr-1" style="vertical-align:-2px; color:white;"></i>
+      <span style="color:white;">링크가 복사되었습니다</span>
+    </div>
+
+    <div class="screen-notes">
+      <details open>
+        <summary>Notes</summary>
+        <p>최종 페이오프 화면. 유형/별명/설명/캐릭터 3개가 항상 채워진다 (불변 규칙: 결과의 완결성).</p>
+        <ul>
+          <li>트리거: 12번째 답변 직후 / <code>?type=XXXX</code> URL 진입</li>
+          <li>인터랙션 (자가 완료): "링크 복사" → 클립보드에 <code>현재origin/?type=ENFP</code> 복사 + 토스트 / "다시하기" → 시작 화면</li>
+          <li>인터랙션 (공유 진입): "나도 해보기" → 시작 화면 (1번 질문 진입 가능) / "링크 복사"는 동일하게 동작</li>
+          <li>전환: 다시하기·나도 해보기 → 시작 화면 / 토스트 자동 사라짐 (~2초)</li>
+          <li>시나리오 7 (동점): 같은 결과 화면이지만 모든 차원 동점 입력에도 16유형 중 하나로 결정적 판정</li>
+          <li>캐릭터 카드: 이모지 시그니처 3개 + 카드별 액센트 컬러(피치/라벤더/버터). 저작권 0, 캐릭터 즉시 연상 (spec 제외 항목 '이미지'는 그대로 유지 — 이모지는 시스템 폰트라 별도 자산 없음)</li>
+        </ul>
+      </details>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+  document.getElementById('screen-' + id).classList.add('active');
+  document.querySelectorAll('nav button[id^="nav-"]').forEach(function(b) { b.classList.remove('active'); });
+  document.getElementById('nav-' + id).classList.add('active');
+}
+
+function setViewport(mode) {
+  document.body.classList.remove('viewport-mobile', 'viewport-desktop');
+  document.body.classList.add('viewport-' + mode);
+  document.querySelectorAll('.vp-toggle button').forEach(function(b) { b.classList.remove('active'); });
+  document.getElementById('vp-' + mode).classList.add('active');
+}
+
+// Question screen scenario toggle
+var questionTexts = {
+  1: '친구들과 주말 약속을 잡았어요.<br>당신은 어떤 쪽에 가까운가요?',
+  5: '여행을 떠나기 전, 당신의 스타일은?<br>(5번째 질문 / 새로고침 시 진행 손실)',
+  12: '마지막 질문이에요!<br>새로운 일을 시작할 때 당신은?'
+};
+function setQuestion(n) {
+  document.getElementById('q-num').textContent = n;
+  document.getElementById('q-num-inline').textContent = n;
+  document.getElementById('q-bar').style.width = (n / 12 * 100) + '%';
+  document.getElementById('q-text').innerHTML = questionTexts[n];
+  [1, 5, 12].forEach(function(i) {
+    var b = document.getElementById('q-btn-' + i);
+    if (b) b.classList.toggle('active', i === n);
+  });
+}
+
+// Result screen mode toggle
+function setResultMode(mode) {
+  var primary = document.getElementById('action-primary');
+  var secondary = document.getElementById('action-secondary');
+  var toast = document.getElementById('copy-toast');
+
+  ['self', 'copied', 'shared'].forEach(function(m) {
+    var b = document.getElementById('r-btn-' + m);
+    if (b) b.classList.toggle('active', m === mode);
+  });
+
+  if (mode === 'self') {
+    primary.innerHTML = '<i data-lucide="link-2" class="inline w-4 h-4 mr-1" style="vertical-align:-2px;"></i> 링크 복사';
+    secondary.innerHTML = '<i data-lucide="refresh-cw" class="inline w-4 h-4 mr-1" style="vertical-align:-2px;"></i> 다시하기';
+    secondary.classList.remove('w-btn-primary');
+    toast.style.display = 'none';
+  } else if (mode === 'copied') {
+    primary.innerHTML = '<i data-lucide="link-2" class="inline w-4 h-4 mr-1" style="vertical-align:-2px;"></i> 링크 복사';
+    secondary.innerHTML = '<i data-lucide="refresh-cw" class="inline w-4 h-4 mr-1" style="vertical-align:-2px;"></i> 다시하기';
+    secondary.classList.remove('w-btn-primary');
+    toast.style.display = 'block';
+  } else if (mode === 'shared') {
+    primary.innerHTML = '<i data-lucide="play" class="inline w-4 h-4 mr-1" style="vertical-align:-2px;"></i> 나도 해보기';
+    secondary.innerHTML = '<i data-lucide="link-2" class="inline w-4 h-4 mr-1" style="vertical-align:-2px;"></i> 링크 복사';
+    toast.style.display = 'none';
+  }
+  lucide.createIcons();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('nav-0').click();
+  lucide.createIcons();
+});
+</script>
+</body>
+</html>
