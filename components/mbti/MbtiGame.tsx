@@ -3,7 +3,9 @@
 import { useReducer } from "react";
 import { useSearchParams } from "next/navigation";
 import { StartScreen } from "./StartScreen";
+import { QuestionScreen } from "./QuestionScreen";
 import { questions, TOTAL_QUESTIONS } from "@/config/mbti/questions";
+import { score } from "@/lib/mbti/scoring";
 import type { Choice, TypeCode } from "@/types/mbti";
 
 type ViewState = "start" | "quiz" | "result";
@@ -37,8 +39,14 @@ function reducer(state: State, action: Action): State {
     case "ANSWER": {
       const newAnswers = [...state.answers, action.choice];
       const nextIndex = state.currentIndex + 1;
-      if (nextIndex >= questions.length) {
-        return { ...state, answers: newAnswers, view: "result", resultCode: "ENFP" as TypeCode, currentIndex: nextIndex };
+      if (nextIndex >= TOTAL_QUESTIONS) {
+        return {
+          ...state,
+          answers: newAnswers,
+          view: "result",
+          resultCode: score(newAnswers),
+          currentIndex: nextIndex,
+        };
       }
       return { ...state, answers: newAnswers, currentIndex: nextIndex };
     }
@@ -71,25 +79,14 @@ export function MbtiGame() {
   }
 
   if (view === "quiz") {
-    const question = questions[currentIndex];
     return (
       <main className="min-h-screen flex items-center justify-center p-4">
-        <div className="w-full max-w-lg flex flex-col gap-6">
-          <p className="text-sm text-muted-foreground text-center">
-            {currentIndex + 1} / {TOTAL_QUESTIONS}
-          </p>
-          <p className="text-lg font-medium text-center">{question.prompt}</p>
-          <div className="flex flex-col gap-3">
-            {question.choices.map((choice, i) => (
-              <button
-                key={i}
-                onClick={() => dispatch({ type: "ANSWER", choice })}
-                className="w-full p-4 text-left rounded-lg border border-border bg-card text-card-foreground hover:bg-accent transition-colors"
-              >
-                {choice.label}
-              </button>
-            ))}
-          </div>
+        <div className="w-full max-w-lg">
+          <QuestionScreen
+            question={questions[currentIndex]}
+            currentIndex={currentIndex}
+            onAnswer={(choice) => dispatch({ type: "ANSWER", choice })}
+          />
         </div>
       </main>
     );
