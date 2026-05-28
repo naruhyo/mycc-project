@@ -4,6 +4,7 @@ import { useReducer } from "react";
 import { useSearchParams } from "next/navigation";
 import { StartScreen } from "./StartScreen";
 import { QuestionScreen } from "./QuestionScreen";
+import { ResultScreen } from "./ResultScreen";
 import { questions, TOTAL_QUESTIONS } from "@/config/mbti/questions";
 import { score } from "@/lib/mbti/scoring";
 import type { Choice, TypeCode } from "@/types/mbti";
@@ -93,13 +94,13 @@ export function MbtiGame() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-4">
-      <div className="w-full max-w-lg text-center flex flex-col gap-4">
-        <p className="text-4xl font-bold">{resultCode}</p>
-        <p className="text-muted-foreground">결과 화면 (Task 3에서 완성)</p>
-        <button onClick={() => dispatch({ type: "RESET" })} className="underline text-sm">
-          다시하기
-        </button>
+    <main className="min-h-screen flex items-start justify-center p-4 pt-8">
+      <div className="w-full max-w-lg">
+        <ResultScreen
+          typeCode={resultCode!}
+          onReset={() => dispatch({ type: "RESET" })}
+          fromUrl={state.fromUrl}
+        />
       </div>
     </main>
   );
