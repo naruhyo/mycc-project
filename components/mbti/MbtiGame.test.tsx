@@ -47,6 +47,29 @@ describe("MbtiGame", () => {
     expect(progressBar).toHaveAttribute("aria-valuenow", "2");
   });
 
+  it("reset from result → start screen with 시작하기 button", () => {
+    render(<MbtiGame />);
+    fireEvent.click(screen.getByRole("button", { name: "시작하기" }));
+    for (let i = 0; i < TOTAL_QUESTIONS; i++) {
+      fireEvent.click(screen.getByRole("button", { name: questions[i].choices[0].label }));
+    }
+    // Should now be on result screen — click 다시하기
+    fireEvent.click(screen.getByRole("button", { name: "다시하기" }));
+    expect(screen.getByText("MBTI 캐릭터 매치")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "시작하기" })).toBeInTheDocument();
+  });
+
+  it("after reset, starting again shows 1 / 12", () => {
+    render(<MbtiGame />);
+    fireEvent.click(screen.getByRole("button", { name: "시작하기" }));
+    for (let i = 0; i < TOTAL_QUESTIONS; i++) {
+      fireEvent.click(screen.getByRole("button", { name: questions[i].choices[0].label }));
+    }
+    fireEvent.click(screen.getByRole("button", { name: "다시하기" }));
+    fireEvent.click(screen.getByRole("button", { name: "시작하기" }));
+    expect(screen.getByText("1 / 12")).toBeInTheDocument();
+  });
+
   it("shows result screen with valid 4-letter TypeCode after answering all 12 questions", () => {
     render(<MbtiGame />);
     fireEvent.click(screen.getByRole("button", { name: "시작하기" }));
