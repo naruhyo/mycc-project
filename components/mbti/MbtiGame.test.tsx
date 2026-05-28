@@ -1,10 +1,12 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { MbtiGame } from "./MbtiGame";
 import { questions, TOTAL_QUESTIONS } from "@/config/mbti/questions";
 
+const mockSearchParams = { get: vi.fn().mockReturnValue(null) };
+
 vi.mock("next/navigation", () => ({
-  useSearchParams: () => new URLSearchParams(""),
+  useSearchParams: () => mockSearchParams,
 }));
 
 const VALID_TYPE_CODES = [
@@ -15,6 +17,10 @@ const VALID_TYPE_CODES = [
 ];
 
 describe("MbtiGame", () => {
+  beforeEach(() => {
+    mockSearchParams.get.mockReturnValue(null);
+  });
+
   it("shows title and start button on load", () => {
     render(<MbtiGame />);
     expect(screen.getByText("MBTI 캐릭터 매치")).toBeInTheDocument();
@@ -78,10 +84,29 @@ describe("MbtiGame", () => {
       fireEvent.click(screen.getByRole("button", { name: questions[i].choices[0].label }));
     }
 
-    // Should show result view (Task 3 placeholder)
     expect(screen.queryByText("1 / 12")).not.toBeInTheDocument();
-    // TypeCode should be one of the 16 valid codes
     const shownCode = VALID_TYPE_CODES.find((code) => screen.queryByText(code));
     expect(shownCode).toBeTruthy();
+  });
+
+  it("shows result screen directly for valid ?type= URL", () => {
+    mockSearchParams.get.mockReturnValue("ENFP");
+    render(<MbtiGame />);
+    expect(screen.getByText("ENFP")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "나도 해보기" })).toBeInTheDocument();
+  });
+
+  it("shows start screen for invalid ?type= URL (fallback)", () => {
+    mockSearchParams.get.mockReturnValue("XYZ");
+    render(<MbtiGame />);
+    expect(screen.getByText("MBTI 캐릭터 매치")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "시작하기" })).toBeInTheDocument();
+  });
+
+  it("나도 해보기 click from URL result → start screen", () => {
+    mockSearchParams.get.mockReturnValue("INTJ");
+    render(<MbtiGame />);
+    fireEvent.click(screen.getByRole("button", { name: "나도 해보기" }));
+    expect(screen.getByText("MBTI 캐릭터 매치")).toBeInTheDocument();
   });
 });

@@ -2,19 +2,15 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { mbtiTypes } from "@/config/mbti/types";
 import { mbtiCharacters } from "@/config/mbti/characters";
 import type { TypeCode } from "@/types/mbti";
 
 interface ResultScreenProps {
   typeCode: TypeCode;
-  onReset: () => void;
-  fromUrl?: boolean;
-  onTryMyself?: () => void;
 }
 
-export function ResultScreen({ typeCode, onReset, fromUrl = false, onTryMyself }: ResultScreenProps) {
+export function ResultScreen({ typeCode }: ResultScreenProps) {
   const meta = mbtiTypes[typeCode];
   const characters = mbtiCharacters[typeCode];
 
@@ -49,23 +45,6 @@ export function ResultScreen({ typeCode, onReset, fromUrl = false, onTryMyself }
             </CardContent>
           </Card>
         ))}
-      </div>
-
-      <div className="flex flex-col gap-2 pt-2">
-        {fromUrl ? (
-          <>
-            <Button className="w-full" onClick={onTryMyself ?? onReset}>
-              나도 해보기
-            </Button>
-            <Button variant="outline" className="w-full" onClick={onReset}>
-              처음으로
-            </Button>
-          </>
-        ) : (
-          <Button variant="outline" className="w-full" onClick={onReset}>
-            다시하기
-          </Button>
-        )}
       </div>
     </div>
   );
