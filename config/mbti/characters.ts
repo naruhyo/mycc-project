@@ -14,7 +14,7 @@ export const mbtiCharacters: CharacterTriple = {
   ENTP: [
     { name: "L", work: "데스노트", emoji: "🍰🔍🧠", comment: "어떤 규칙도 뒤집을 수 있다고 믿는 천재 탐정" },
     { name: "Edward Elric", work: "강철의 연금술사", emoji: "⚗️💢🔧", comment: "세상의 진리를 찾아 모든 것에 의문을 던지는 아이" },
-    { name: "사스키", work: "나루토", emoji: "⚡🌑🗡️", comment: "기존 질서를 뒤집는 도발적인 반골 천재" },
+    { name: "사스케", work: "나루토", emoji: "⚡🌑🗡️", comment: "기존 질서를 뒤집는 도발적인 반골 천재" },
   ],
   ENTJ: [
     { name: "에런 예거", work: "진격의 거인", emoji: "⛓️🌊🔥", comment: "압도적 의지로 역사의 흐름을 바꾸려는 비전가" },

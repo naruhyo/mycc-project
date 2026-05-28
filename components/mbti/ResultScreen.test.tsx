@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { vi, describe, it, expect, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { ResultScreen } from "./ResultScreen";
 import { mbtiTypes } from "@/config/mbti/types";
@@ -12,6 +12,10 @@ const ALL_CODES: TypeCode[] = [
   "ISFP","ISFJ","ISTP","ISTJ",
 ];
 
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
 describe("ResultScreen", () => {
   it("shows type code, nickname, and description for ENFP", () => {
     render(<ResultScreen typeCode="ENFP" />);
@@ -20,25 +24,31 @@ describe("ResultScreen", () => {
     expect(screen.getByText(mbtiTypes["ENFP"].description)).toBeInTheDocument();
   });
 
-  it("renders exactly 3 character cards for ENFP", () => {
+  it("renders exactly 1 character card for ENFP", () => {
+    vi.spyOn(Math, "random").mockReturnValue(0);
     render(<ResultScreen typeCode="ENFP" />);
-    const characters = mbtiCharacters["ENFP"];
-    for (const char of characters) {
-      expect(screen.getByText(char.comment)).toBeInTheDocument();
-    }
+    const chars = mbtiCharacters["ENFP"];
+    expect(screen.getByText(chars[0].comment)).toBeInTheDocument();
+    expect(screen.queryByText(chars[1].comment)).not.toBeInTheDocument();
+    expect(screen.queryByText(chars[2].comment)).not.toBeInTheDocument();
+  });
+
+  it("picks different character based on random value", () => {
+    vi.spyOn(Math, "random").mockReturnValue(0.99);
+    render(<ResultScreen typeCode="ENFP" />);
+    const chars = mbtiCharacters["ENFP"];
+    expect(screen.getByText(chars[2].comment)).toBeInTheDocument();
   });
 
   it.each(ALL_CODES)("renders complete result for %s — no empty fields", (code) => {
+    vi.spyOn(Math, "random").mockReturnValue(0);
     render(<ResultScreen typeCode={code} />);
     expect(screen.getByText(code)).toBeInTheDocument();
     expect(screen.getByText(mbtiTypes[code].nickname)).toBeInTheDocument();
     expect(screen.getByText(mbtiTypes[code].description)).toBeInTheDocument();
-    const chars = mbtiCharacters[code];
-    expect(chars).toHaveLength(3);
-    for (const char of chars) {
-      expect(screen.getAllByText(char.name).length).toBeGreaterThanOrEqual(1);
-      expect(screen.getAllByText(char.work).length).toBeGreaterThanOrEqual(1);
-      expect(screen.getByText(char.comment)).toBeInTheDocument();
-    }
+    const char = mbtiCharacters[code][0];
+    expect(screen.getByText(char.name)).toBeInTheDocument();
+    expect(screen.getByText(char.work)).toBeInTheDocument();
+    expect(screen.getByText(char.comment)).toBeInTheDocument();
   });
 });
