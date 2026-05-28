@@ -2,14 +2,18 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { CopyButton } from "./CopyButton";
 
-// Mock sonner toast
+const { mockToastSuccess, mockToastError } = vi.hoisted(() => ({
+  mockToastSuccess: vi.fn(),
+  mockToastError: vi.fn(),
+}));
+
 vi.mock("sonner", () => ({
   toast: {
-    success: vi.fn(),
+    success: mockToastSuccess,
+    error: mockToastError,
   },
 }));
 
-// Mock clipboard API
 const mockWriteText = vi.fn().mockResolvedValue(undefined);
 Object.defineProperty(navigator, "clipboard", {
   value: { writeText: mockWriteText },
@@ -17,11 +21,10 @@ Object.defineProperty(navigator, "clipboard", {
   configurable: true,
 });
 
-import { toast } from "sonner";
-
 describe("CopyButton", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockWriteText.mockResolvedValue(undefined);
   });
 
   it("renders a button with copy label", () => {
@@ -41,7 +44,16 @@ describe("CopyButton", () => {
     render(<CopyButton url="https://example.com/?type=ENFP" />);
     fireEvent.click(screen.getByRole("button", { name: /링크 복사/i }));
     await waitFor(() => {
-      expect(toast.success).toHaveBeenCalledWith(expect.stringMatching(/복사/));
+      expect(mockToastSuccess).toHaveBeenCalledWith(expect.stringMatching(/복사/), expect.anything());
+    });
+  });
+
+  it("calls toast.error when clipboard write fails", async () => {
+    mockWriteText.mockRejectedValueOnce(new Error("denied"));
+    render(<CopyButton url="https://example.com/?type=ENFP" />);
+    fireEvent.click(screen.getByRole("button", { name: /링크 복사/i }));
+    await waitFor(() => {
+      expect(mockToastError).toHaveBeenCalledWith(expect.stringMatching(/실패/), expect.anything());
     });
   });
 });

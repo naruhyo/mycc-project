@@ -1,6 +1,6 @@
 "use client";
 
-import { useReducer, useEffect } from "react";
+import { useReducer } from "react";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { StartScreen } from "./StartScreen";
@@ -65,16 +65,15 @@ function reducer(state: State, action: Action): State {
 
 export function MbtiGame() {
   const searchParams = useSearchParams();
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const typeParam = searchParams.get("type");
 
-  useEffect(() => {
-    const typeParam = searchParams.get("type");
-    if (isValidTypeCode(typeParam)) {
-      dispatch({ type: "SET_RESULT_FROM_URL", code: typeParam });
-    }
-    // only run on mount — searchParams identity changes are intentionally ignored
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // Compute initial state synchronously from URL — no useEffect needed, no flicker
+  const [state, dispatch] = useReducer(
+    reducer,
+    isValidTypeCode(typeParam)
+      ? { ...initialState, view: "result" as const, resultCode: typeParam, fromUrl: true }
+      : initialState,
+  );
 
   const { view, currentIndex, resultCode, fromUrl } = state;
   const shareUrl = typeof window !== "undefined" && resultCode

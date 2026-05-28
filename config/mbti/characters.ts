@@ -32,9 +32,9 @@ export const mbtiCharacters: CharacterTriple = {
     { name: "Winry Rockbell", work: "강철의 연금술사", emoji: "🔧💙🌟", comment: "사랑하는 사람의 상처를 자신의 손으로 고치려는 헌신" },
   ],
   ESTP: [
-    { name: "가프 가본", work: "나루토 질풍전", emoji: "⚡🌿🎯", comment: "상황을 순식간에 읽고 누구보다 빠르게 행동하는 승부사" },
+    { name: "바쿠고 카츠키", work: "나의 히어로 아카데미아", emoji: "💥🔥😤", comment: "폭발적인 본능과 압도적인 실력으로 최전선을 달리는 승부사" },
     { name: "Natsu Dragneel", work: "페어리 테일", emoji: "🔥🐉👊", comment: "생각보다 주먹이 먼저 나가는 즉흥 전투 중독자" },
-    { name: "흑역사 켄", work: "진격의 거인", emoji: "🔪😈⚡", comment: "최전선에서 짜릿함을 찾는 계산된 무모함의 소유자" },
+    { name: "가프", work: "원피스", emoji: "✊💪🌊", comment: "어떤 상황도 두 주먹으로 해결하는 전설의 해군 영웅" },
   ],
   ESTJ: [
     { name: "Levi Ackerman", work: "진격의 거인", emoji: "🗡️🧹🌑", comment: "흔들리는 세상에서도 규율과 임무를 지키는 강철 조장" },
@@ -43,7 +43,7 @@ export const mbtiCharacters: CharacterTriple = {
   ],
   INFP: [
     { name: "Frodo Baggins", work: "반지의 제왕", emoji: "💍🌄🕊️", comment: "작은 가슴 속에 세상을 구할 용기를 품은 순수한 영혼" },
-    { name: "우메하라 유키", work: "시키모리는 쪽팔리지 않아", emoji: "🌸💭🌙", comment: "섬세한 감수성으로 아름다움을 발견하는 몽상가" },
+    { name: "미도리야 이즈쿠", work: "나의 히어로 아카데미아", emoji: "💚🌀✨", comment: "누구도 포기하지 않겠다는 순수한 이상으로 영웅의 길을 걷는 소년" },
     { name: "Alphonse Elric", work: "강철의 연금술사", emoji: "⚗️💛🐱", comment: "자신을 잃어도 인간에 대한 믿음을 놓지 않는 따뜻함" },
   ],
   INFJ: [
@@ -64,7 +64,7 @@ export const mbtiCharacters: CharacterTriple = {
   ISFP: [
     { name: "Mikasa Ackerman", work: "진격의 거인", emoji: "🧣⚔️❄️", comment: "말 없이 행동으로 사랑을 증명하는 조용한 수호자" },
     { name: "Kaneki Ken", work: "도쿄 구울", emoji: "☕📚🌑", comment: "상처받은 감수성으로 아름다움과 고통 사이를 걷는 예술가" },
-    { name: "Rurouni Kenshin", work: "바람의 검심", emoji: "🌸⚔️🌙", comment: "조용하지만 자신만의 신념을 위해 목숨을 거는 방랑자" },
+    { name: "히무라 켄신", work: "바람의 검심", emoji: "🌸⚔️🌙", comment: "조용하지만 자신만의 신념을 위해 목숨을 거는 방랑자" },
   ],
   ISFJ: [
     { name: "Hinata Hyuga", work: "나루토", emoji: "💜🌸🌊", comment: "조용한 헌신과 응원으로 사랑하는 사람의 등불이 되는 존재" },
@@ -74,7 +74,7 @@ export const mbtiCharacters: CharacterTriple = {
   ISTP: [
     { name: "Levi Ackerman", work: "진격의 거인", emoji: "⚔️🧹🌑", comment: "최소한의 말과 최대한의 실력으로 문제를 해결하는 달인" },
     { name: "Toph Beifong", work: "아바타: 아앙의 전설", emoji: "🪨🦶😏", comment: "규칙 따위는 모르고 오직 결과로 말하는 맹인 천재 전사" },
-    { name: "Rivaille", work: "진격의 거인", emoji: "🌿🔪☕", comment: "가장 어두운 상황에서도 냉정함을 잃지 않는 현장 전문가" },
+    { name: "로로노아 조로", work: "원피스", emoji: "🗡️🌿🥊", comment: "세계 최강을 향해 묵묵히 칼을 갈며 나아가는 고독한 검사" },
   ],
   ISTJ: [
     { name: "Erwin Smith", work: "진격의 거인", emoji: "📋🦅🌑", comment: "규율과 사명감으로 혼돈 속에서 체계를 세우는 총지휘관" },

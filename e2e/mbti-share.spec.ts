@@ -32,8 +32,9 @@ test.describe("MBTI share", () => {
   test("나도 해보기 click → start screen → can start quiz", async ({ page }) => {
     await page.goto("/?type=ENFP");
     await page.getByRole("button", { name: "나도 해보기" }).click();
-    await expect(page.getByText("MBTI 캐릭터 매치")).toBeVisible();
-    await page.getByRole("button", { name: "시작하기" }).click();
+    const startButton = page.getByRole("button", { name: "시작하기" });
+    await expect(startButton).toBeVisible();
+    await startButton.click();
     await expect(page.getByText("1 / 12")).toBeVisible();
   });
 
